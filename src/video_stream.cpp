@@ -190,7 +190,8 @@ virtual void do_publish(const ros::TimerEvent& event) {
         // FLIP_HORIZONTAL == 1, FLIP_VERTICAL == 0 or FLIP_BOTH == -1
         // Flip the image if necessary
         if (is_new_image){
-          cv::resize(frame,frame,cv::Size(latest_config.width, latest_config.height),CV_INTER_AREA);
+          if(latest_config.width > 0)
+            cv::resize(frame,frame,cv::Size(latest_config.width, latest_config.height),CV_INTER_AREA);
           if (latest_config.flip_horizontal && latest_config.flip_vertical)
             cv::flip(frame, frame, -1);
           else if (latest_config.flip_horizontal)
