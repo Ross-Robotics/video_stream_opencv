@@ -254,8 +254,17 @@ virtual void subscribe() {
     cap->open(device_num);
   } catch (std::invalid_argument &ex) {
     NODELET_INFO_STREAM("Opening VideoCapture with provider: " << video_stream_provider);
-    video_stream_provider =
-    cap->open(video_stream_provider,cv::CAP_FFMPEG);
+    if(video_stream_provider_type == "rtsp_stream" )
+    {
+      NODELET_INFO_STREAM("Setting the FFMPEG env options ");
+      setenv("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;udp", 1);
+      cap->open(video_stream_provider,cv::CAP_FFMPEG);
+      unsetenv("OPENCV_FFMPEG_CAPTURE_OPTIONS");
+    }
+    else
+    {
+      cap->open(video_stream_provider);
+    }
     if(video_stream_provider_type == "videofile" )
       {
         if(latest_config.stop_frame == -1) latest_config.stop_frame = cap->get(cv::CAP_PROP_FRAME_COUNT);
@@ -279,13 +288,6 @@ virtual void subscribe() {
     }
   }
   NODELET_INFO_STREAM("Video stream provider type detected: " << video_stream_provider_type);
-
-  if(video_stream_provider_type == "rtsp_stream" )
-  {
-    NODELET_INFO_STREAM("Setting the rtsp buffer to: "<< latest_config.buffer_queue_size);
-    cap->set(cv::CAP_PROP_BUFFERSIZE, latest_config.buffer_queue_size);
-
-  }
 
   double reported_camera_fps;
   // OpenCV 2.4 returns -1 (instead of a 0 as the spec says) and prompts an error
