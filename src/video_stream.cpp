@@ -254,7 +254,8 @@ virtual void subscribe() {
     cap->open(device_num);
   } catch (std::invalid_argument &ex) {
     NODELET_INFO_STREAM("Opening VideoCapture with provider: " << video_stream_provider);
-    cap->open(video_stream_provider);
+    video_stream_provider =
+    cap->open(video_stream_provider,cv::CAP_FFMPEG);
     if(video_stream_provider_type == "videofile" )
       {
         if(latest_config.stop_frame == -1) latest_config.stop_frame = cap->get(cv::CAP_PROP_FRAME_COUNT);
