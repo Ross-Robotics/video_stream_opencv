@@ -132,7 +132,7 @@ virtual void do_capture() {
         }
 
         frame_counter++;
-        if (video_stream_provider_type == "videofile")
+        if (video_stream_provider_type == "videofile" || video_stream_provider_type == "rtsp_stream")
         {
             camera_fps_rate.sleep();
         }
