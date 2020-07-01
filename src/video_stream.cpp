@@ -124,15 +124,12 @@ virtual void do_capture() {
         }
         if (!cap->read(frame)) {
           NODELET_ERROR("Could not capture frame");
+          NODELET_WARN_STREAM("waiting to read files");
           if (latest_config.reopen_on_read_failure) {
             NODELET_WARN("trying to reopen the device");
             unsubscribe();
             subscribe();
           }
-        }
-        else
-        {
-          NODELET_WARN("Captuirng frame...");
         }
 
         frame_counter++;
@@ -165,6 +162,7 @@ virtual void do_capture() {
         }
     }
     NODELET_DEBUG("Capture thread finished");
+    NODELET_WARN("Image captured");
 }
 
 virtual void do_publish(const ros::TimerEvent& event) {
