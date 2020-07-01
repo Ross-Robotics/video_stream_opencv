@@ -110,7 +110,7 @@ virtual void do_capture() {
     ros::Rate camera_fps_rate(latest_config.set_camera_fps);
 
     int frame_counter = 0;
-    int frame_counter_2 = 0;
+    int fps_counter = 0;
     // Read frames as fast as possible
     capture_thread_running = true;
     while (nh->ok() && capture_thread_running && subscriber_num > 0) {
@@ -135,12 +135,13 @@ virtual void do_capture() {
         else
         {
 
-          frame_counter_2++;
-          NODELET_WARN("Image captured...");
-          if (frame_counter_2 == 10)
+          fps_counter++;
+
+          if (fps_counter == latest_config.set_camera_fps)
           {
+            NODELET_WARN("retrieving frame");
             cap->retrieve(frame);
-            frame_counter_2 = 0;
+            fps_counter = 0;
           }
         }
 
