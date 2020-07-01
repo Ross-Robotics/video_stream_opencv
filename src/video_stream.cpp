@@ -265,6 +265,13 @@ virtual void subscribe() {
   }
   NODELET_INFO_STREAM("Video stream provider type detected: " << video_stream_provider_type);
 
+  if(video_stream_provider_type == "videofile" )
+  {
+    NODELET_INFO_STREAM("Setting the rtsp buffer to: "<< latest_config.buffer_queue_size);
+    cap->set(cv::CAP_PROP_BUFFERSIZE, latest_config.buffer_queue_size);
+
+  }
+
   double reported_camera_fps;
   // OpenCV 2.4 returns -1 (instead of a 0 as the spec says) and prompts an error
   // HIGHGUI ERROR: V4L2: Unable to get property <unknown property string>(5) - Invalid argument
