@@ -110,6 +110,7 @@ virtual void do_capture() {
     ros::Rate camera_fps_rate(latest_config.set_camera_fps);
 
     int frame_counter = 0;
+    int frame_counter_2 = 0;
     // Read frames as fast as possible
     capture_thread_running = true;
     while (nh->ok() && capture_thread_running && subscriber_num > 0) {
@@ -122,7 +123,7 @@ virtual void do_capture() {
           cv::waitKey(100);
           continue;
         }
-        if (!cap->read(frame)) {
+        if (!cap->get(frame)) {
           NODELET_ERROR("Could not capture frame");
           NODELET_WARN_STREAM("waiting to read files");
           if (latest_config.reopen_on_read_failure) {
@@ -133,7 +134,14 @@ virtual void do_capture() {
         }
         else
         {
+
+          frame_counter_2++;
           NODELET_WARN("Image captured...");
+          if (frame_counter_2 == 10)
+          {
+            cap->retrieve(frame);
+            frame_counter_2 = 0;
+          }
         }
 
         frame_counter++;
