@@ -123,7 +123,7 @@ virtual void do_capture() {
           cv::waitKey(100);
           continue;
         }
-        if (!cap->get(frame)) {
+        if (!cap->grab()) {
           NODELET_ERROR("Could not capture frame");
           NODELET_WARN_STREAM("waiting to read files");
           if (latest_config.reopen_on_read_failure) {
