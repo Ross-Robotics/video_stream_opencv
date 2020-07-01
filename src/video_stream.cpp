@@ -265,7 +265,7 @@ virtual void subscribe() {
   }
   NODELET_INFO_STREAM("Video stream provider type detected: " << video_stream_provider_type);
 
-  if(video_stream_provider_type == "videofile" )
+  if(video_stream_provider_type == "rtsp_stream" )
   {
     NODELET_INFO_STREAM("Setting the rtsp buffer to: "<< latest_config.buffer_queue_size);
     cap->set(cv::CAP_PROP_BUFFERSIZE, latest_config.buffer_queue_size);
