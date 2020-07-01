@@ -131,6 +131,10 @@ virtual void do_capture() {
             subscribe();
           }
         }
+        else
+        {
+          NODELET_WARN("Image captured...");
+        }
 
         frame_counter++;
         if (video_stream_provider_type == "videofile")
@@ -162,7 +166,6 @@ virtual void do_capture() {
         }
     }
     NODELET_DEBUG("Capture thread finished");
-    NODELET_WARN("Image captured");
 }
 
 virtual void do_publish(const ros::TimerEvent& event) {
