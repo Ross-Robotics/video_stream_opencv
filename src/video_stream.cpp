@@ -130,9 +130,13 @@ virtual void do_capture() {
             subscribe();
           }
         }
+        else
+        {
+          NODELET_WARN("Captuirng frame...");
+        }
 
         frame_counter++;
-        if (video_stream_provider_type == "videofile" || video_stream_provider_type == "rtsp_stream")
+        if (video_stream_provider_type == "videofile")
         {
             camera_fps_rate.sleep();
         }
