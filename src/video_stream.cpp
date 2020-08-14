@@ -139,7 +139,7 @@ virtual void do_capture() {
 
           if (fps_counter >= (int)(latest_config.set_camera_fps / latest_config.fps))
           {
-            NODELET_WARN("retrieving frame");
+            //NODELET_WARN("retrieving frame");
             cap->retrieve(frame);
             fps_counter = 0;
           }
