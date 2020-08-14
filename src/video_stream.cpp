@@ -110,6 +110,7 @@ virtual void do_capture() {
     ros::Rate camera_fps_rate(latest_config.set_camera_fps);
 
     int frame_counter = 0;
+    int fps_counter = 0;
     // Read frames as fast as possible
     capture_thread_running = true;
     while (nh->ok() && capture_thread_running && subscriber_num > 0) {
@@ -122,12 +123,25 @@ virtual void do_capture() {
           cv::waitKey(100);
           continue;
         }
-        if (!cap->read(frame)) {
+        if (!cap->grab()) {
           NODELET_ERROR("Could not capture frame");
+          NODELET_WARN_STREAM("waiting to read files");
           if (latest_config.reopen_on_read_failure) {
             NODELET_WARN("trying to reopen the device");
             unsubscribe();
             subscribe();
+          }
+        }
+        else
+        {
+
+          fps_counter++;
+
+          if (fps_counter >= (int)(latest_config.set_camera_fps / latest_config.fps))
+          {
+            //NODELET_WARN("retrieving frame");
+            cap->retrieve(frame);
+            fps_counter = 0;
           }
         }
 
@@ -190,6 +204,8 @@ virtual void do_publish(const ros::TimerEvent& event) {
         // FLIP_HORIZONTAL == 1, FLIP_VERTICAL == 0 or FLIP_BOTH == -1
         // Flip the image if necessary
         if (is_new_image){
+          if(latest_config.width > 0)
+            cv::resize(frame,frame,cv::Size(latest_config.width, latest_config.height),CV_INTER_AREA);
           if (latest_config.flip_horizontal && latest_config.flip_vertical)
             cv::flip(frame, frame, -1);
           else if (latest_config.flip_horizontal)
@@ -238,7 +254,17 @@ virtual void subscribe() {
     cap->open(device_num);
   } catch (std::invalid_argument &ex) {
     NODELET_INFO_STREAM("Opening VideoCapture with provider: " << video_stream_provider);
-    cap->open(video_stream_provider);
+    if(video_stream_provider_type == "rtsp_stream" )
+    {
+      NODELET_INFO_STREAM("Setting the FFMPEG env options ");
+      setenv("OPENCV_FFMPEG_CAPTURE_OPTIONS", "rtsp_transport;udp", 1);
+      cap->open(video_stream_provider,cv::CAP_FFMPEG);
+      unsetenv("OPENCV_FFMPEG_CAPTURE_OPTIONS");
+    }
+    else
+    {
+      cap->open(video_stream_provider);
+    }
     if(video_stream_provider_type == "videofile" )
       {
         if(latest_config.stop_frame == -1) latest_config.stop_frame = cap->get(cv::CAP_PROP_FRAME_COUNT);
